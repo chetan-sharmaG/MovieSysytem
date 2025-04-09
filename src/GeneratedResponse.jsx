@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -21,8 +21,9 @@ const queryClient = new QueryClient();
 
 const StreamingBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
-    right: -8,
-    top: 8,
+    // right: 0,
+    // top: 8,
+    transform:'none',
     border: `2px solid ${theme.palette.background.paper}`,
     padding: "0 6px",
     backgroundColor: "#E50914",
@@ -31,9 +32,9 @@ const StreamingBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const fetchOmdbData = async (title, year) => {
+const fetchOmdbData = async (title, year,type) => {
   const { data } = await axios.get("https://www.omdbapi.com/", {
-    params: { apikey: "8ef9ee99", t: title, y: year },
+    params: { apikey: "8ef9ee99", t: title, type: type }, //y: year
   });
   return data?.Response === "True" ? data : null;
 };
@@ -41,16 +42,17 @@ const fetchOmdbData = async (title, year) => {
 const RecommendationCard = ({ item }) => {
   const { data, isLoading } = useQuery({
     queryKey: ["omdb", item.imdb_id],
-    queryFn: () => fetchOmdbData(item.title, item.release_year),
+    queryFn: () => fetchOmdbData(item.title, item.release_year,item.type),
   });
 
   return (
     <Card
       sx={{
-        width: { xs: "100%", sm: 280, md: 320 },
+        // width: { xs: "100%", sm: 280, md: 320 },
         backgroundColor: "#141414",
         color: "#fff",
         m: 2,
+        width:'300px !important',
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
         "&:hover": {
           transform: "scale(1.05)",
@@ -71,9 +73,10 @@ const RecommendationCard = ({ item }) => {
           <StreamingBadge badgeContent={item.streaming_platform}>
             <CardMedia
               component="img"
-              height="300"
+              height="300px"
+              sx={{width:'300px !important'}}
               image={data?.Poster !== "N/A" ? data?.Poster : "https://via.placeholder.com/300x450?text=No+Image"}
-              alt={item.title}
+              // alt={item.title}
             />
           </StreamingBadge>
 
@@ -82,7 +85,7 @@ const RecommendationCard = ({ item }) => {
             subheader={
               <Box display="flex" alignItems="center" gap={0.5}>
                 <StarIcon sx={{ color: "#f5c518" }} />
-                <Typography variant="body2">{item.imdb_rating}</Typography>
+                <Typography variant="body2" sx={{ color: "#f5c518" }}>{item.imdb_rating}</Typography>
               </Box>
             }
           />
@@ -114,8 +117,11 @@ const RecommendationCard = ({ item }) => {
 };
 
 const RecommendationsList = ({ content }) => {
+  useEffect(() => {
+    document.getElementById('recommendations').scrollIntoView({ behavior: 'smooth' })
+  },[content])
   return (
-    <Box sx={{ backgroundColor: "#000", py: 5 }}>
+    <Box id='recommendations' sx={{ backgroundColor: "#000", py: 5 }}>
       <Container>
         <Typography
           variant="h4"

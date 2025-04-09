@@ -137,9 +137,7 @@ const Search = () => {
   }, [handleScroll]);
 
   async function chat() {
-    // console.log(getSelectedMoviesText(fabOptions));
     const chatCompletion = await getGroqChatCompletion();
-    // Print the completion returned by the LLM.
     setContent(JSON.parse(chatCompletion.choices[0].message.content) || {});
   }
 
