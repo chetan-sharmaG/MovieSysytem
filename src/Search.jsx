@@ -16,6 +16,7 @@ import {
   FormControl,
   CircularProgress,
   InputAdornment,
+  Stack,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
@@ -25,6 +26,8 @@ import ClearIcon from "@mui/icons-material/Clear";
 
 import Groq from "groq-sdk";
 import GeneratedResponse from "./GeneratedResponse";
+import { trendingHollywood, trendingMovies } from "./constant";
+import PopularSection from "./PopularSection";
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
@@ -77,7 +80,7 @@ const SearchPage = () => {
       setPage(1);
       fetchData(debounce, 1);
     } else {
-      setError("")
+      setError("");
       setResults([]);
     }
   }, [debounce, filter]);
@@ -107,8 +110,7 @@ const SearchPage = () => {
       setQuery(savedQuery);
     }
   }, []);
-  
-  
+
   useEffect(() => {
     localStorage.setItem("searchQuery", query);
   }, [query]);
@@ -156,7 +158,7 @@ Recommendations should be diverse in type, themes, and cultural background if po
 
 Movie title should be accurate and complete.
 If title includes special characters, remove them except for character '!'.
-If the selected movies are of all same language, recommend in that language.
+If the selected movies are of all same language, recommend in that language. 
 Also in description add why are you recommending this movie or show.
 For each recommendation, return the following fields in JSON:
 
@@ -239,7 +241,14 @@ If data is not available, write "Not Available".`,
         width: results.length > 0 ? "calc(100vw - 16px)" : "calc(100vw - 16px)",
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "center", mb: 3 ,alignItems:'center'}}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          mb: 3,
+          alignItems: "center",
+        }}
+      >
         <TextField
           variant="outlined"
           placeholder="Search Movies / Shows / Anime..."
@@ -257,7 +266,7 @@ If data is not available, write "Not Available".`,
             endAdornment: query && (
               <InputAdornment position="end">
                 <IconButton onClick={() => setQuery("")}>
-                  <ClearIcon  sx={{ color: "white"}}/>
+                  <ClearIcon sx={{ color: "white" }} />
                 </IconButton>
               </InputAdornment>
             ),
@@ -299,57 +308,73 @@ If data is not available, write "Not Available".`,
       )}
       <Grid
         container
-        spacing={'18px'}
+        spacing={"18px"}
         minHeight="60vh"
         sx={{ p: 1, width: "80%", m: "0 auto" }}
       >
-        {results.map((movie) => (
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
-            key={movie.imdbID}
-            onClick={() => handleSelect(movie)}
-            sx={{
-              transition: "transform 0.3s",
-              cursor: "pointer",
-              width: "185px",
-            }}
-          >
-            <Card
+        {results.length > 0 && query ? (
+          results.map((movie) => (
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              key={movie.imdbID}
+              onClick={() => handleSelect(movie)}
               sx={{
-                // bgcolor: "#1f1f1f",
-                bgcolor: "transparent",
-                "&:hover": { transform: "scale(1.05)" },
+                transition: "transform 0.3s",
+                cursor: "pointer",
+                width: "185px",
               }}
             >
-              <CardMedia
-                component="img"
-                height="265" //265
-                width="185" //185
-                style={{ objectFit: "cover" }}
-                image={
-                  movie.Poster !== "N/A"
-                    ? movie.Poster
-                    : `https://placehold.co/300x300/yellow/black?text=${movie.Title}`
-                }
-                alt={movie.Title}
-              />
-              <CardContent sx={{pl:0}}>
-                <Typography
-                  variant="h6"
-                  sx={{ fontWeight: "600", color: "#fff",fontSize:'1rem' , overflow:"hidden",WebkitLineClamp:'2' ,display:"-webkit-box",WebkitBoxOrient:"vertical"}}
-                >
-                  {movie.Title}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "#b3b3b3" }}>
-                  {movie.Year} | {movie.Type}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+              <Card
+                sx={{
+                  bgcolor: "transparent",
+                  "&:hover": { transform: "scale(1.05)" },
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  height="265" //265
+                  width="185" //185
+                  style={{ objectFit: "cover" }}
+                  image={
+                    movie.Poster !== "N/A"
+                      ? movie.Poster
+                      : `https://placehold.co/300x300/yellow/black?text=${movie.Title}`
+                  }
+                  alt={movie.Title}
+                />
+                <CardContent sx={{ pl: 0 }}>
+                  <Typography
+                  // onMouse
+                  onMouseEnter={(e) => {
+                    e.target.style.textDecoration = "underline";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.textDecoration = "none";
+                  }}
+                    variant="h6"
+                    sx={{
+                      fontWeight: "600",
+                      color: "#fff",
+                      fontSize: "1rem",
+                      overflow: "hidden",
+                      WebkitLineClamp: "2",
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                    }}
+                  >
+                    {movie.Title}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "#b3b3b3" }}>
+                    {movie.Year} | {movie.Type}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))
+        ) : <PopularSection  handleSelect={handleSelect}/>}
 
         {loading &&
           Array.from({ length: 10 }).map((_, idx) => (
@@ -436,7 +461,9 @@ If data is not available, write "Not Available".`,
               selfAlign: "end",
               "&:hover": { bgcolor: "#f6121d" },
             }}
-            onClick={()=>{handleGenerateResponse(); }}
+            onClick={() => {
+              handleGenerateResponse();
+            }}
             disabled={buttonLoading}
           >
             {buttonLoading ? (

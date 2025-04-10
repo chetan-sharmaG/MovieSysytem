@@ -15,9 +15,9 @@ import {
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import { styled } from "@mui/material/styles";
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import {  useQuery } from "@tanstack/react-query";
 import axios from "axios";
-const queryClient = new QueryClient();
+
 
 const StreamingBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -142,9 +142,9 @@ const RecommendationsList = ({ content }) => {
 };
 
 const GeneratedResponse = ({ content }) => (
-  <QueryClientProvider client={queryClient}>
+  // <QueryClientProvider client={queryClient}>
     <RecommendationsList content={content} />
-  </QueryClientProvider>
+  // </QueryClientProvider>
 );
 
 export default GeneratedResponse;
