@@ -114,8 +114,9 @@ const [currentMovieId, setCurrentMovieId] = useState(null);
                   <Card
                     sx={{
                       // bgcolor: "#1f1f1f",
+                      position:'relative',
                       bgcolor: "transparent",
-                      "&:hover": { transform: "scale(1.05)" },
+                      "&:hover": { transform: "scale(1.02)" },
                     }}
                   >
                     <CardMedia
@@ -148,9 +149,9 @@ const [currentMovieId, setCurrentMovieId] = useState(null);
                       <Typography variant="body2" sx={{ color: "#b3b3b3" }}>
                         {movie.Year} | {movie.Type}
                       </Typography>
-                        <InfoIcon onMouseEnter={() => fetchMovieDetails(movie.imdbID)} sx={{color:'wheat',zIndex:100,position:'absolute',top:10,right:0}}/>           
         
                     </CardContent>
+                        <InfoIcon onMouseEnter={() => fetchMovieDetails(movie.imdbID)} sx={{color:'wheat',zIndex:100,position:'absolute',top:10,right:0}}/>           
                   </Card>
                 </Grid>
               ))}
