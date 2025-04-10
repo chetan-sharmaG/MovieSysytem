@@ -15,11 +15,14 @@ import {
   InputLabel,
   FormControl,
   CircularProgress,
+  InputAdornment,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useDebounce } from "./util";
+import ClearIcon from "@mui/icons-material/Clear";
+
 import Groq from "groq-sdk";
 import GeneratedResponse from "./GeneratedResponse";
 
@@ -74,6 +77,7 @@ const SearchPage = () => {
       setPage(1);
       fetchData(debounce, 1);
     } else {
+      setError("")
       setResults([]);
     }
   }, [debounce, filter]);
@@ -96,6 +100,18 @@ const SearchPage = () => {
   useEffect(() => {
     if (page > 1) fetchData(debounce, page);
   }, [page]);
+
+  useEffect(() => {
+    const savedQuery = localStorage.getItem("searchQuery");
+    if (savedQuery) {
+      setQuery(savedQuery);
+    }
+  }, []);
+  
+  
+  useEffect(() => {
+    localStorage.setItem("searchQuery", query);
+  }, [query]);
 
   async function chat() {
     const chatCompletion = await getGroqChatCompletion();
@@ -140,7 +156,8 @@ Recommendations should be diverse in type, themes, and cultural background if po
 
 Movie title should be accurate and complete.
 If title includes special characters, remove them except for character '!'.
-
+If the selected movies are of all same language, recommend in that language.
+Also in description add why are you recommending this movie or show.
 For each recommendation, return the following fields in JSON:
 
 [
@@ -222,19 +239,28 @@ If data is not available, write "Not Available".`,
         width: results.length > 0 ? "calc(100vw - 16px)" : "calc(100vw - 16px)",
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 3 ,alignItems:'center'}}>
         <TextField
           variant="outlined"
-          placeholder="Search Movies..."
+          placeholder="Search Movies / Shows / Anime..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           sx={{
             input: { color: "white", fontSize: "1.2rem" },
-            width: query ? "60%" : "80%",
+            width: query ? "30%" : "50%",
             transition: "width 0.4s ease",
             bgcolor: "#1f1f1f",
             borderRadius: 2,
             mr: 2,
+          }}
+          InputProps={{
+            endAdornment: query && (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setQuery("")}>
+                  <ClearIcon  sx={{ color: "white"}}/>
+                </IconButton>
+              </InputAdornment>
+            ),
           }}
         />
         <FormControl variant="outlined" sx={{ minWidth: 120 }}>
@@ -273,7 +299,7 @@ If data is not available, write "Not Available".`,
       )}
       <Grid
         container
-        spacing={5}
+        spacing={'18px'}
         minHeight="60vh"
         sx={{ p: 1, width: "80%", m: "0 auto" }}
       >
@@ -310,10 +336,10 @@ If data is not available, write "Not Available".`,
                 }
                 alt={movie.Title}
               />
-              <CardContent>
+              <CardContent sx={{pl:0}}>
                 <Typography
                   variant="h6"
-                  sx={{ fontWeight: "bold", color: "#fff",fontSize:'1rem' , overflow:"hidden",WebkitLineClamp:'2' ,display:"-webkit-box",WebkitBoxOrient:"vertical"}}
+                  sx={{ fontWeight: "600", color: "#fff",fontSize:'1rem' , overflow:"hidden",WebkitLineClamp:'2' ,display:"-webkit-box",WebkitBoxOrient:"vertical"}}
                 >
                   {movie.Title}
                 </Typography>
