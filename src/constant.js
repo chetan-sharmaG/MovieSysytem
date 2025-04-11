@@ -87,14 +87,14 @@ export const trendingMovies = {
       {
         "Title": "Inside Out 2",
         "Year": "2024",
-        "imdbID": "tt14457254",
+        "imdbID": "tt22022452",
         "Type": "movie",
         "Poster": "https://m.media-amazon.com/images/M/MV5BYWY3MDE2Y2UtOTE3Zi00MGUzLTg2MTItZjE1ZWVkMGVlODRmXkEyXkFqcGc@._V1_SX300.jpg"
     },
       {
         "Title": "Deadpool & Wolverine",
         "Year": "2024",
-        "imdbID": "tt12345678",
+        "imdbID": "tt6263850",
         "Type": "movie",
         "Poster": "https://m.media-amazon.com/images/M/MV5BZTk5ODY0MmQtMzA3Ni00NGY1LThiYzItZThiNjFiNDM4MTM3XkEyXkFqcGc@._V1_SX300.jpg"
     },
@@ -108,21 +108,21 @@ export const trendingMovies = {
       {
         "Title": "Furiosa: A Mad Max Saga",
         "Year": "2024",
-        "imdbID": "tt11261848",
+        "imdbID": "tt12037194",
         "Type": "movie",
         "Poster": "https://m.media-amazon.com/images/M/MV5BNTcwYWE1NTYtOWNiYy00NzY3LWIwY2MtNjJmZDkxNDNmOWE1XkEyXkFqcGc@._V1_SX300.jpg"
     },
       {
         "Title": "The Wild Robot",
         "Year": "2024",
-        "imdbID": "tt12345679",
+        "imdbID": "tt29623480",
         "Type": "movie",
         "Poster": "https://m.media-amazon.com/images/M/MV5BZWNiZjVlZTUtNGUwYi00MjJmLTg2MDctNWEzYTJiMzY1ODc4XkEyXkFqcGc@._V1_SX300.jpg"
     },
       {
         "Title": "The Brutalist",
         "Year": "2024",
-        "imdbID": "tt12345680",
+        "imdbID": "tt8999762",
         "Type": "movie",
         "Poster": "https://m.media-amazon.com/images/M/MV5BM2U0MWRjZTMtMDVhNC00MzY4LTgwOTktZGQ2MDdiYTI4OWMxXkEyXkFqcGc@._V1_SX300.jpg"
     },
@@ -136,14 +136,14 @@ export const trendingMovies = {
       {
         "Title": "Nosferatu",
         "Year": "2024",
-        "imdbID": "tt11390036",
+        "imdbID": "tt5040012",
         "Type": "movie",
         "Poster": "https://m.media-amazon.com/images/M/MV5BY2FhZGE3NmEtNWJjOC00NDI1LWFhMTQtMjcxNmQzZmEwNGIzXkEyXkFqcGc@._V1_SX300.jpg"
     },
       {
         "Title": "Godzilla x Kong: The New Empire",
         "Year": "2024",
-        "imdbID": "tt10545296",
+        "imdbID": "tt14539740",
         "Type": "movie",
         "Poster": "https://m.media-amazon.com/images/M/MV5BMTY0N2MzODctY2ExYy00OWYxLTkyNDItMTVhZGIxZjliZjU5XkEyXkFqcGc@._V1_SX300.jpg"
     }

@@ -28,11 +28,36 @@ import Groq from "groq-sdk";
 import GeneratedResponse from "./GeneratedResponse";
 import { trendingHollywood, trendingMovies } from "./constant";
 import PopularSection from "./PopularSection";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import InfoIcon from "@mui/icons-material/Info";
+import HoveredDetails from "./HoveredDetails";
+import CardLayout from "./CardLayout";
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
   dangerouslyAllowBrowser: true,
 });
+
+const fetchMovieDetails = async (imdbID) => {
+  const data = JSON.parse(sessionStorage.getItem("movieDetails")) || [];
+
+  if (!data.find((item) => item.imdbID === imdbID)) {
+    const response = await fetch(
+      `https://www.omdbapi.com/?apikey=8ef9ee99&i=${imdbID}&plot=short`
+    );
+
+    const movieDetails = await response.json();
+
+    sessionStorage.setItem(
+      "movieDetails",
+      JSON.stringify([...data, movieDetails])
+    );
+
+    return movieDetails;
+  }
+
+  return data.find((item) => item.imdbID === imdbID);
+};
 const SearchPage = () => {
   const [query, setQuery] = useState("");
   const debounce = useDebounce(query, 500);
@@ -42,12 +67,32 @@ const SearchPage = () => {
   const [maxPageSize, setMaxPageSize] = useState(1);
   const [selectedMovies, setSelectedMovies] = useState([]);
   const [content, setContent] = useState({});
+  const queryClient = useQueryClient();
 
   const [filter, setFilter] = useState("all");
   const [error, setError] = useState("");
   const [buttonLoading, setButtonLoading] = useState(false);
   const observerRef = useRef();
   const sliderRef = useRef();
+  const [currentMovieId, setCurrentMovieId] = useState(null);
+  const [hoveredMovie, setHoveredMovie] = useState(null);
+  const [boxPosition, setBoxPosition] = useState({ top: 0, right: 0 });
+
+  const iconRefs = useRef({});
+  const { refetch, isFetching } = useQuery({
+    queryKey: ["movieDetails"],
+    queryFn: () => fetchMovieDetails(currentMovieId),
+    enabled: false,
+  });
+
+  const handleMouseEnter = (imdbID) => {
+    setCurrentMovieId(imdbID);
+    refetch();
+  };
+
+  const MouseOut = () => {
+    queryClient.cancelQueries(["movieDetails"]);
+  };
 
   const fetchData = async (searchQuery, pageNumber) => {
     if (!searchQuery) return;
@@ -238,7 +283,7 @@ If data is not available, write "Not Available".`,
         color: "#fff",
         minHeight: "100vh",
         padding: "16px 0px",
-        width: results.length > 0 ? "calc(100vw - 16px)" : "calc(100vw - 16px)",
+        width: "calc(100vw - 16px)",
       }}
     >
       <Box
@@ -265,7 +310,12 @@ If data is not available, write "Not Available".`,
           InputProps={{
             endAdornment: query && (
               <InputAdornment position="end">
-                <IconButton onClick={() => setQuery("")}>
+                <IconButton
+                  onClick={() => {
+                    setQuery("");
+                    localStorage.removeItem("searchQuery");
+                  }}
+                >
                   <ClearIcon sx={{ color: "white" }} />
                 </IconButton>
               </InputAdornment>
@@ -306,54 +356,7 @@ If data is not available, write "Not Available".`,
           </Typography>
         </Box>
       )}
-      <Grid
-        container
-        spacing={"18px"}
-        minHeight="60vh"
-        sx={{ p: 1, width: "80%", m: "0 auto" }}
-      >
-        {results.length > 0 && query ? (
-          results.map((movie) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              key={movie.imdbID}
-              onClick={() => handleSelect(movie)}
-              sx={{
-                transition: "transform 0.3s",
-                cursor: "pointer",
-                width: "185px",
-              }}
-            >
-              <Card
-                sx={{
-                  bgcolor: "transparent",
-                  "&:hover": { transform: "scale(1.05)" },
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  height="265" //265
-                  width="185" //185
-                  style={{ objectFit: "cover" }}
-                  image={
-                    movie.Poster !== "N/A"
-                      ? movie.Poster
-                      : `https://placehold.co/300x300/yellow/black?text=${movie.Title}`
-                  }
-                  alt={movie.Title}
-                />
-                <CardContent sx={{ pl: 0 }}>
-                  <Typography
-                  // onMouse
-                  onMouseEnter={(e) => {
-                    e.target.style.textDecoration = "underline";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.textDecoration = "none";
-                  }}
+      {!loading && !error && query && <Typography
                     variant="h6"
                     sx={{
                       fontWeight: "600",
@@ -363,21 +366,39 @@ If data is not available, write "Not Available".`,
                       WebkitLineClamp: "2",
                       display: "-webkit-box",
                       WebkitBoxOrient: "vertical",
+                      width: "80%",
+                      m: "0 auto",
                     }}
                   >
-                    {movie.Title}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "#b3b3b3" }}>
-                    {movie.Year} | {movie.Type}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+                    Search Result
+                  </Typography>}
+      <Grid
+        container
+        spacing={"18px"}
+        minHeight="60vh"
+        sx={{ p: 1, width: "80%", m: "0 auto" }}
+      > 
+        {results.length > 0 && query ? (
+          results.map((movie) => (
+            <CardLayout
+              isFetching={isFetching}
+              handleSelect={handleSelect}
+              movie={movie}
+              boxPosition={boxPosition}
+              fetchMovieDetails={fetchMovieDetails}
+              hoveredMovie={hoveredMovie}
+              iconRefs={iconRefs}
+              setBoxPosition={setBoxPosition}
+              setHoveredMovie={setHoveredMovie}
+              key={movie.imdbID}
+            />
           ))
-        ) : <PopularSection  handleSelect={handleSelect}/>}
+        ) : loading && debounce ? null : (
+          <PopularSection handleSelect={handleSelect} />
+        )}
 
         {loading &&
-          Array.from({ length: 10 }).map((_, idx) => (
+          Array.from({ length: 12 }).map((_, idx) => (
             <Grid item xs={12} sm={6} md={3} key={idx}>
               <Skeleton
                 variant="rectangular"
@@ -415,7 +436,7 @@ If data is not available, write "Not Available".`,
             sx={{
               display: "flex",
               overflowX: "auto",
-              width: "82%",
+              width: "75%",
               gap: 1,
               "&::-webkit-scrollbar": { display: "none" },
             }}
@@ -469,7 +490,7 @@ If data is not available, write "Not Available".`,
             {buttonLoading ? (
               <CircularProgress size={24} sx={{ color: "white" }} />
             ) : (
-              "Generate Response"
+              "Generate Recommendation"
             )}
           </Button>
         </Box>
