@@ -1,10 +1,11 @@
-import { Box, Card, CardContent, CardMedia, Grid, Tooltip, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { Box, Card, CardContent, CardMedia, CircularProgress, Grid, Tooltip, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import InfoIcon from "@mui/icons-material/Info";
 import HoveredDetails from "./HoveredDetails";
 
 const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,fetchMovieDetails,hoveredMovie,boxPosition,isFetching}) => {
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   return (
     <Grid
       item
@@ -33,18 +34,24 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
           "&:hover .info-icon": { opacity: 1 },
         }}
       >
+      <Box sx={{height:"265px",width:"185px",position:"relative"}} >
+        {loading && (
+        <CircularProgress   sx={{ height: "50px", width: "50px",color: "red",position: "absolute", top: "50%", left: "50%" }} />
+      )}
+
         <CardMedia
           component="img"
           height="265" //265
           width="185" //185
-          style={{ objectFit: "cover" }}
+          style={{ objectFit: "cover",opacity: loading ? 0.5 : 1 }}
           image={isFetching ? "https://placehold.co/300x300/yellow/black?text=Loading..." :
             movie.Poster !== "N/A"
               ? movie.Poster
               : `https://placehold.co/300x300/yellow/black?text=${movie.Title}`
           }
           alt={movie.Title}
-        />
+          />
+          </Box>
         <CardContent sx={{ pl: 0 }}>
         
           <Typography
@@ -85,16 +92,19 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
               top: rect.top + window.scrollY,
               left: rect.left + window.scrollX,
             });
-
+            setLoading(true);
             const details = await fetchMovieDetails(movie.imdbID);
+            console.log(details);
             setHoveredMovie(details);
+            setLoading(false);
           }}
           //   onMouseLeave={() => setHoveredMovie(null)}
         >
           <InfoIcon />
         </Box>
       </Card>
-      {hoveredMovie?.imdbID === movie.imdbID && (
+      
+      {hoveredMovie?.imdbId === movie.imdbID && (
         <HoveredDetails boxPosition={boxPosition} hoveredMovie={hoveredMovie} setVisible={setVisible} visible={visible} />
       )}
     </Grid>

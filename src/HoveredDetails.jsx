@@ -1,9 +1,43 @@
 import { Box, Tooltip, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 
-const HoveredDetails = ({ boxPosition, hoveredMovie ,setVisible,visible}) => {
- 
+const fetchActorInfo = async (actorName) => {
+  const [actorData, setActorData] = React.useState(null);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch(
+          `https://en.wikipedia.org/api/rest_v1/page/summary/${actorName}`
+        );
+        const data = await response.json();
+        if (
+          data.description.includes("actor") ||
+          data.description.includes("actress")
+        ) {
+          setActorData(data?.thumbnail?.source);
+        } else {
+          setActorData(
+            "https://placehold.co/300x300/yellow/black?text=No%20Image"
+          );
+        }
+      } catch (error) {
+        setActorData(
+          "https://placehold.co/300x300/yellow/black?text=No%20Image"
+        );
+      }
+    }
+    fetchData();
+  }, [actorName]);
 
+  return (
+    <>
+      <img width={70} src={actorData} alt={actorName} />
+    </>
+  );
+};
+
+const HoveredDetails = ({ boxPosition, hoveredMovie, setVisible, visible }) => {
+  const [actorInfo, setActorInfo] = React.useState(false);
   useEffect(() => {
     setVisible(true);
   }, [hoveredMovie]);
@@ -38,11 +72,11 @@ const HoveredDetails = ({ boxPosition, hoveredMovie ,setVisible,visible}) => {
         muted
         autoPlay
         loop
-        poster={hoveredMovie.Poster}
+        poster={hoveredMovie?.short?.image}
         style={{ borderRadius: "8px", transition: "opacity 0.5s ease-in" }}
       >
         <source
-          src={`https://imdb.iamidiotareyoutoo.com/media/${hoveredMovie.imdbID}`}
+          src={`https://imdb.iamidiotareyoutoo.com/media/${hoveredMovie?.imdbId}`}
           type="video/mp4"
         />
         Your browser does not support the video tag.
@@ -60,17 +94,18 @@ const HoveredDetails = ({ boxPosition, hoveredMovie ,setVisible,visible}) => {
       />} */}
 
       <Typography variant="h6" fontWeight="bold">
-        {hoveredMovie.Title}
+        {hoveredMovie?.short?.name}
       </Typography>
-      <Tooltip title={hoveredMovie.Plot} placement="right">
+      <Tooltip title={hoveredMovie?.short?.description} placement="right">
         <Typography variant="body2" color="#ccc">
-          {hoveredMovie.Plot?.slice(0, 120) || "No Plot Available"}
+          {hoveredMovie?.short?.description?.slice(0, 120) ||
+            "No Plot Available"}
           ...
         </Typography>
       </Tooltip>
 
       <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
-        {hoveredMovie.Genre?.split(",").map((genre) => (
+        {hoveredMovie?.short?.genre?.map((genre) => (
           <Box
             key={genre}
             sx={{
@@ -109,25 +144,47 @@ const HoveredDetails = ({ boxPosition, hoveredMovie ,setVisible,visible}) => {
             fontWeight: "bold",
           }}
         >
-          {hoveredMovie.imdbRating}
+          {hoveredMovie?.short.aggregateRating?.ratingValue}
         </Box>
       </Box>
       <Typography variant="caption" color="#aaa">
-        IMDb Votes: {hoveredMovie?.imdbVotes}
+        IMDb Votes: {hoveredMovie?.short.aggregateRating?.ratingCount}
       </Typography>
       <Typography variant="caption" color="#aaa" mt={1}>
-        Actors: {hoveredMovie.Actors}
+        Actors:{" "}
+        {hoveredMovie?.short?.actor.map((actor, index) => {
+          return (
+            <Tooltip
+              key={index}
+              sx={{ width: "100%", height: "100%" }}
+              title={<h1>{fetchActorInfo(actor.name)}</h1>}
+              placement="top"
+            >
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={actor.url}
+                key={index}
+                onMouseEnter={() => setActorInfo(true)}
+                onMouseLeave={() => setActorInfo(false)}
+              >
+                {actor.name}{" "}
+                {index !== hoveredMovie?.short?.actor.length - 1 && ","}{" "}
+              </a>
+            </Tooltip>
+          );
+        })}
       </Typography>
 
-      <Typography variant="caption" color="#aaa">
+      {/* <Typography variant="caption" color="#aaa">
         Language: {hoveredMovie.Language}
       </Typography>
       <Typography variant="caption" color="#aaa" mt={0}>
         Country: {hoveredMovie.Country}
-      </Typography>
+      </Typography> */}
       <Box sx={{ mt: 2 }}>
         <a
-          href={`https://www.imdb.com/title/${hoveredMovie.imdbID}`}
+          href={`https://www.imdb.com/title/${hoveredMovie?.imdbId}`}
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: "none" }}

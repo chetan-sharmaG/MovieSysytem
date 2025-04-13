@@ -32,10 +32,9 @@ const returnSection = (index) => {
 };
 const fetchMovieDetails = async (imdbID) => {
   const data = JSON.parse(sessionStorage.getItem("movieDetails")) || [];
-
-  if (!data.find((item) => item.imdbID === imdbID)) {
+  if (!data.find((item) => item.imdbId === imdbID)) {
     const response = await fetch(
-      `https://www.omdbapi.com/?apikey=8ef9ee99&i=${imdbID}&plot=full`
+      `https://imdb.iamidiotareyoutoo.com/search?tt=${imdbID}`
     );
 
     const movieDetails = await response.json();
