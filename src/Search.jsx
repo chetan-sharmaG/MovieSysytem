@@ -43,7 +43,7 @@ const fetchMovieDetails = async (imdbID) => {
 
   if (!data.find((item) => item.imdbID === imdbID)) {
     const response = await fetch(
-      `https://www.omdbapi.com/?apikey=8ef9ee99&i=${imdbID}&plot=short`
+      `https://www.omdbapi.com/?apikey=8ef9ee99&i=${imdbID}&plot=full`
     );
 
     const movieDetails = await response.json();
@@ -175,43 +175,45 @@ const SearchPage = () => {
 
 You deeply analyze user preferences considering the following factors:
 
-Genre
-
-Themes and Story Patterns (including pacing, narrative structure, plot elements)
-
-Actors (for movies/shows) or Voice Actors (for anime)
-
-Directors (for movies/shows) or Original Creators (for anime)
-
-Emotional Tone
-
+Genre  
+Themes and Story Patterns (including pacing, narrative structure, plot elements)  
+Actors (for movies/shows) or Voice Actors (for anime)  
+Directors (for movies/shows) or Original Creators (for anime)  
+Emotional Tone  
 Recurring Messages or Themes (moral, emotional or philosophical)
 
-User's Liked Items:
-${selectedMoviesText}
-Based on this analysis, recommend 5 new movies, shows, or anime that the user might also enjoy.
+User's Liked Items: ${selectedMoviesText}
 
-Important Recommendation Rules:
+Recommendation Rules:
 
-Do NOT recommend sequels, prequels, remakes, or spin-offs of the user's liked items.
+- Recommend 5 new items strictly based on the user's selected type(s):  
+    → If only Movies and Shows are selected, recommend only Movies or Shows.  
+    → If only Anime is selected, recommend only Anime.  
+    → If Movies, Shows, and Anime are mixed, prefer Movies and Shows for recommendations. Anime should only be included if strongly aligned with the user’s preferences.
 
-Mixed languages are acceptable — mention the primary language.
+Language Rules:
 
-Only recommend if verified and accurate information is available.
+- If all selected items are of the same language, recommend in that language.  
+- If selected items are in mixed languages, prioritize the most frequent language among them, but diverse language recommendations are acceptable.
 
-Recommendations should be diverse in type, themes, and cultural background if possible.
+Additional Guidelines:
 
-Movie title should be accurate and complete.
-If title includes special characters, remove them except for character '!'.
-If the selected movies are of all same language, recommend in that language. 
-Also in description add why are you recommending this movie or show.
-For each recommendation, return the following fields in JSON:
+- Do NOT recommend sequels, prequels, remakes, or spin-offs of the user's liked items.  
+- Mixed languages are acceptable — mention the primary language.  
+- Only recommend if verified and accurate information is available.  
+- Recommendations should be diverse in type, themes, and cultural background if possible.  
+- Movie title should be accurate and complete. Remove special characters except '!'.  
+- For each recommendation, explain why you are recommending this item based on the user's preferences in description.
+
+Output Format:
+
+Return recommendations in the following JSON format:
 
 [
   {
     "title": "string",
     "release_year": number,
-    "type": "Movie" or "Series",
+    "type": "Movie" or "Series" or "if Anime then use Series",
     "actors":["string","string"],
     "directors": ["string", "string"],
     "description": "string",
@@ -219,21 +221,20 @@ For each recommendation, return the following fields in JSON:
     "imdb_rating": number,
     "imdb_id": "string",
     "language": "string",
-    "streaming_platform": "string",
+    "streaming_platform": "string"
   }
 ]
+
 Important Instructions for Output:
-Output ONLY valid JSON.
 
-Do not add any explanation or comments outside JSON.
+- Output ONLY valid JSON.  
+- Do not add any explanation or comments outside JSON.  
+- Field names must match EXACTLY.  
+- Always provide values as per the schema.  
+- Use arrays only where specified.  
+- If data is not available, write "Not Available".
 
-Field names must match EXACTLY.
-
-Always provide values as per the schema.
-
-Use arrays only where specified.
-
-If data is not available, write "Not Available".`,
+Return the output in a clean, well-structured JSON format. Do not add any additional text or comments.`,
         },
       ],
       model: "llama3-70b-8192",

@@ -76,7 +76,7 @@ const RecommendationCard = ({ item }) => {
               height="300px"
               sx={{width:'300px !important'}}
               image={data?.Poster !== "N/A" ? data?.Poster : "https://via.placeholder.com/300x450?text=No+Image"}
-              // alt={item.title}
+              alt={item.title}
             />
           </StreamingBadge>
 

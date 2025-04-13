@@ -1,7 +1,13 @@
-import { Box, Typography } from "@mui/material";
-import React from "react";
+import { Box, Tooltip, Typography } from "@mui/material";
+import React, { useEffect } from "react";
 
-const HoveredDetails = ({ boxPosition, hoveredMovie }) => {
+const HoveredDetails = ({ boxPosition, hoveredMovie ,setVisible,visible}) => {
+ 
+
+  useEffect(() => {
+    setVisible(true);
+  }, [hoveredMovie]);
+
   return (
     <Box
       className="details"
@@ -15,15 +21,33 @@ const HoveredDetails = ({ boxPosition, hoveredMovie }) => {
         p: 2,
         borderRadius: "8px",
         width: "300px",
-        zIndex: 10000,
+        zIndex: 10,
         boxShadow: "0px 0px 12px rgba(0,0,0,0.6)",
         display: "flex",
         flexDirection: "column",
         gap: 1,
+        opacity: visible ? 1 : 0,
+        transition: "opacity 0.4s ease",
+        pointerEvents: visible ? "auto" : "none",
       }}
       //   onMouseLeave={() => setHoveredMovie(null)}
     >
-      <img
+      <video
+        height="200px"
+        controls
+        muted
+        autoPlay
+        loop
+        poster={hoveredMovie.Poster}
+        style={{ borderRadius: "8px", transition: "opacity 0.5s ease-in" }}
+      >
+        <source
+          src={`https://imdb.iamidiotareyoutoo.com/media/${hoveredMovie.imdbID}`}
+          type="video/mp4"
+        />
+        Your browser does not support the video tag.
+      </video>
+      {/* {!loading && <img
         src={hoveredMovie.Poster}
         alt={hoveredMovie.Title}
         style={{
@@ -33,14 +57,17 @@ const HoveredDetails = ({ boxPosition, hoveredMovie }) => {
           objectPosition: "center",
           marginTop: "0px",
         }}
-      />
+      />} */}
+
       <Typography variant="h6" fontWeight="bold">
         {hoveredMovie.Title}
       </Typography>
-      <Typography variant="body2" color="#ccc">
-        {hoveredMovie.Plot?.slice(0, 120) || "No Plot Available"}
-        ...
-      </Typography>
+      <Tooltip title={hoveredMovie.Plot} placement="right">
+        <Typography variant="body2" color="#ccc">
+          {hoveredMovie.Plot?.slice(0, 120) || "No Plot Available"}
+          ...
+        </Typography>
+      </Tooltip>
 
       <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
         {hoveredMovie.Genre?.split(",").map((genre) => (

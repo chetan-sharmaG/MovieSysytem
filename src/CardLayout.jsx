@@ -1,9 +1,10 @@
-import { Box, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material";
-import React from "react";
+import { Box, Card, CardContent, CardMedia, Grid, Tooltip, Typography } from "@mui/material";
+import React, { useState } from "react";
 import InfoIcon from "@mui/icons-material/Info";
 import HoveredDetails from "./HoveredDetails";
 
 const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,fetchMovieDetails,hoveredMovie,boxPosition,isFetching}) => {
+  const [visible, setVisible] = useState(false);
   return (
     <Grid
       item
@@ -20,6 +21,8 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
       }}
       onMouseLeave={() => {
         setHoveredMovie(null);
+        setVisible(false);
+
       }}
     >
       <Card
@@ -43,6 +46,7 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
           alt={movie.Title}
         />
         <CardContent sx={{ pl: 0 }}>
+        
           <Typography
             variant="h6"
             sx={{
@@ -57,6 +61,7 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
           >
             {movie.Title}
           </Typography>
+          
           <Typography variant="body2" sx={{ color: "#b3b3b3" }}>
             {movie.Year} | {movie.Type}
           </Typography>
@@ -90,7 +95,7 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
         </Box>
       </Card>
       {hoveredMovie?.imdbID === movie.imdbID && (
-        <HoveredDetails boxPosition={boxPosition} hoveredMovie={hoveredMovie} />
+        <HoveredDetails boxPosition={boxPosition} hoveredMovie={hoveredMovie} setVisible={setVisible} visible={visible} />
       )}
     </Grid>
   );
