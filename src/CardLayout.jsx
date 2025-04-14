@@ -6,19 +6,20 @@ import HoveredDetails from "./HoveredDetails";
 const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,fetchMovieDetails,hoveredMovie,boxPosition,isFetching}) => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  
   return (
     <Grid
       item
-      xs={12}
-      sm={6}
-      md={4}
+      // xs={12}
+      // sm={6}
+      // md={4}
+      size={{xs:12,sm:6,md:4}}
       key={movie.imdbID}
       onClick={() => handleSelect(movie)}
+      className="movie-card"
       sx={{
         transition: "transform 0.3s",
-        cursor: "pointer",
-        width: "185px",
-        minWidth: "185px",
+       
       }}
       onMouseLeave={() => {
         setHoveredMovie(null);
@@ -95,8 +96,11 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
             setLoading(true);
             const details = await fetchMovieDetails(movie.imdbID);
             console.log(details);
-            setHoveredMovie(details);
+            // setHoveredMovie(details);
             setLoading(false);
+            if (details?.imdbId === movie.imdbID) {
+              setHoveredMovie(details);
+            }
           }}
           //   onMouseLeave={() => setHoveredMovie(null)}
         >

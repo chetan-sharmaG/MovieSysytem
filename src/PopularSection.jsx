@@ -104,7 +104,7 @@ const PopularSection = ({ handleSelect }) => {
               sx={{ overflow: "scroll", width: "100%" }}
             >
               {returnSection(index).Search.map((movie) => (
-               <CardLayout boxPosition={boxPosition} hoveredMovie={hoveredMovie}  setBoxPosition={setBoxPosition} setHoveredMovie={setHoveredMovie} handleSelect={handleSelect} iconRefs={iconRefs} key={movie.imdbID} movie={movie}fetchMovieDetails={fetchMovieDetails} />
+               <CardLayout boxPosition={boxPosition} hoveredMovie={hoveredMovie}  setBoxPosition={setBoxPosition} setHoveredMovie={setHoveredMovie} handleSelect={handleSelect} iconRefs={iconRefs} key={movie.imdbID} movie={movie} fetchMovieDetails={fetchMovieDetails} />
               ))}
             </Stack>
           </>

@@ -1,40 +1,8 @@
 import { Box, Tooltip, Typography } from "@mui/material";
 import React, { useEffect } from "react";
+import ActorThumbnailTooltip from "./ActorThumbnailTooltip";
 
-const fetchActorInfo = async (actorName) => {
-  const [actorData, setActorData] = React.useState(null);
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch(
-          `https://en.wikipedia.org/api/rest_v1/page/summary/${actorName}`
-        );
-        const data = await response.json();
-        if (
-          data.description.includes("actor") ||
-          data.description.includes("actress")
-        ) {
-          setActorData(data?.thumbnail?.source);
-        } else {
-          setActorData(
-            "https://placehold.co/300x300/yellow/black?text=No%20Image"
-          );
-        }
-      } catch (error) {
-        setActorData(
-          "https://placehold.co/300x300/yellow/black?text=No%20Image"
-        );
-      }
-    }
-    fetchData();
-  }, [actorName]);
 
-  return (
-    <>
-      <img width={70} src={actorData} alt={actorName} />
-    </>
-  );
-};
 
 const HoveredDetails = ({ boxPosition, hoveredMovie, setVisible, visible }) => {
   const [actorInfo, setActorInfo] = React.useState(false);
@@ -64,6 +32,7 @@ const HoveredDetails = ({ boxPosition, hoveredMovie, setVisible, visible }) => {
         transition: "opacity 0.4s ease",
         pointerEvents: visible ? "auto" : "none",
       }}
+      onClick={(e) => e.stopPropagation()}
       //   onMouseLeave={() => setHoveredMovie(null)}
     >
       <video
@@ -96,13 +65,55 @@ const HoveredDetails = ({ boxPosition, hoveredMovie, setVisible, visible }) => {
       <Typography variant="h6" fontWeight="bold">
         {hoveredMovie?.short?.name}
       </Typography>
-      <Tooltip title={hoveredMovie?.short?.description} placement="right">
-        <Typography variant="body2" color="#ccc">
-          {hoveredMovie?.short?.description?.slice(0, 120) ||
-            "No Plot Available"}
-          ...
-        </Typography>
-      </Tooltip>
+      <Tooltip
+  title={
+    <Typography
+      variant="body2"
+      sx={{
+        color: "#fff",
+        fontSize: "0.85rem",
+        lineHeight: 1.4,
+        maxWidth: "300px",
+      }}
+    >
+      {hoveredMovie?.short?.description || "No Plot Available"}
+    </Typography>
+  }
+  placement="right"
+  arrow
+  componentsProps={{
+    tooltip: {
+      sx: {
+        backgroundColor: "#141414", // Netflix dark
+        border: "1px solid #e50914",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.8)",
+        borderRadius: "8px",
+        padding: "8px 12px",
+      },
+      className: "netflix-tooltip",
+    },
+    arrow: {
+      sx: {
+        color: "#141414",
+      },
+    },
+  }}
+>
+  <Typography
+    variant="body2"
+    color="#ccc"
+    sx={{
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      maxWidth: "260px",
+      fontWeight: 400,
+    }}
+  >
+    {(hoveredMovie?.short?.description || "No Plot Available").slice(0, 120)}...
+  </Typography>
+</Tooltip>
+
 
       <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
         {hoveredMovie?.short?.genre?.map((genre) => (
@@ -151,30 +162,14 @@ const HoveredDetails = ({ boxPosition, hoveredMovie, setVisible, visible }) => {
         IMDb Votes: {hoveredMovie?.short.aggregateRating?.ratingCount}
       </Typography>
       <Typography variant="caption" color="#aaa" mt={1}>
-        Actors:{" "}
-        {hoveredMovie?.short?.actor.map((actor, index) => {
-          return (
-            <Tooltip
-              key={index}
-              sx={{ width: "100%", height: "100%" }}
-              title={<h1>{fetchActorInfo(actor.name)}</h1>}
-              placement="top"
-            >
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href={actor.url}
-                key={index}
-                onMouseEnter={() => setActorInfo(true)}
-                onMouseLeave={() => setActorInfo(false)}
-              >
-                {actor.name}{" "}
-                {index !== hoveredMovie?.short?.actor.length - 1 && ","}{" "}
-              </a>
-            </Tooltip>
-          );
-        })}
-      </Typography>
+  Actors:{" "}
+  {hoveredMovie?.short?.actor.map((actor, index) => (
+    <React.Fragment key={actor.name}>
+      <ActorThumbnailTooltip actor={actor} />
+      {index !== hoveredMovie?.short?.actor.length - 1 && ", "}
+    </React.Fragment>
+  ))}
+</Typography>
 
       {/* <Typography variant="caption" color="#aaa">
         Language: {hoveredMovie.Language}

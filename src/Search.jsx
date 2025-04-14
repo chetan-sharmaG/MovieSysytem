@@ -1,37 +1,30 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  TextField,
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  IconButton,
-  Grid,
-  Skeleton,
-  Button,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  CircularProgress,
-  InputAdornment,
-  Stack,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { useDebounce } from "./util";
 import ClearIcon from "@mui/icons-material/Clear";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  Skeleton,
+  TextField,
+  Typography
+} from "@mui/material";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useDebounce } from "./util";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Groq from "groq-sdk";
-import GeneratedResponse from "./GeneratedResponse";
-import { trendingHollywood, trendingMovies } from "./constant";
-import PopularSection from "./PopularSection";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
-import InfoIcon from "@mui/icons-material/Info";
-import HoveredDetails from "./HoveredDetails";
 import CardLayout from "./CardLayout";
+import GeneratedResponse from "./GeneratedResponse";
+import PopularSection from "./PopularSection";
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
@@ -84,7 +77,7 @@ const SearchPage = () => {
   const { refetch, isFetching } = useQuery({
     queryKey: ["movieDetails"],
     queryFn: () => fetchMovieDetails(currentMovieId),
-    enabled: false,
+    enabled: !!currentMovieId
   });
 
   const handleMouseEnter = (imdbID) => {
@@ -124,10 +117,12 @@ const SearchPage = () => {
   useEffect(() => {
     if (debounce) {
       setResults([]);
+      setError("");
       setPage(1);
       fetchData(debounce, 1);
     } else {
       setError("");
+
       setResults([]);
     }
   }, [debounce, filter]);
@@ -242,16 +237,12 @@ Return the output in a clean, well-structured JSON format. Do not add any additi
       model: "llama3-70b-8192",
     });
   }
-  const getSelectedMoviesText = (selectedMovies) => {
+  const getSelectedMoviesText = useCallback((selectedMovies) => {
     if (!selectedMovies) return "";
-
-    const formattedMovies = selectedMovies
+    return `[${selectedMovies
       .map((movie) => `${movie.Title} (imdb_id: ${movie.imdbID})`)
-      .join(", ");
-
-    return `[${formattedMovies}]`;
-  };
-
+      .join(", ")}]`;
+  }, []);
   const handleSelect = (movie) => {
     if (!selectedMovies.find((m) => m.imdbID === movie.imdbID)) {
       setSelectedMovies([...selectedMovies, movie]);

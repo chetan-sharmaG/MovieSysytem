@@ -10,3 +10,21 @@
 .scrollbar::-webkit-scrollbar {
     display: none;
   }
+  .movie-card{
+    cursor: pointer;
+    width: 185px !important;
+    min-width: 185px !important;
+  }
+
+  @media screen and (max-width: 600px) {
+    .movie-card{
+      width: 140px !important;
+      height: 210px !important;
+      min-width: 140px !important;
+    }
+    .movie-card img{
+        height: 200px !important;
+      width: 140px !important;
+      min-width: 140px !important;
+    }
+  }
