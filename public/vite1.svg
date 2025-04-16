@@ -1,0 +1,29 @@
+<svg
+  width="48"
+  height="48"
+  viewBox="0 0 48 48"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <rect width="48" height="48" rx="10" fill="#E50914" />
+  <path
+    d="M18 14L34 24L18 34V14Z"
+    fill="white"
+  />
+  <rect
+    x="10"
+    y="10"
+    width="4"
+    height="4"
+    fill="white"
+    rx="1"
+  />
+  <rect
+    x="10"
+    y="34"
+    width="4"
+    height="4"
+    fill="white"
+    rx="1"
+  />
+</svg>

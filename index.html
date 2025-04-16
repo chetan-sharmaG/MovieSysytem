@@ -2,15 +2,48 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="/vite1.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+
+    <!-- SEO Meta Tags -->
+    <meta name="title" content="Movie Recommender - Netflix-style UI + LLM-based Recommendations">
+    <meta name="description" content="Discover movies like never before with AI-powered recommendations. Search, filter, and get real-time movie suggestions with a Netflix-like UI.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/">
+    <meta property="og:title" content="Movie Recommender App">
+    <meta property="og:description" content="AI-powered movie recommendation app with a modern Netflix-like design.">
+    <meta property="og:image" content="https://yourdomain.com/preview-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://yourdomain.com/">
+    <meta property="twitter:title" content="Movie Recommender App">
+    <meta property="twitter:description" content="AI-powered movie recommendation app with a modern Netflix-like design.">
+    <meta property="twitter:image" content="https://yourdomain.com/preview-image.png">
+
+    <!-- Manifest + Theme Color (PWA readiness) -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- SSO-Friendly Meta (example for Auth0/Google OAuth2) -->
+    <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com" />
+
+    <!-- Accessibility & Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Your Name" />
+
+    <title>Movie Recommender App</title>
   </head>
   <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+
