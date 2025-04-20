@@ -15,7 +15,7 @@ import {
   Select,
   Skeleton,
   TextField,
-  Typography
+  Typography,
 } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounce } from "./util";
@@ -36,7 +36,6 @@ const fetchMovieDetails = async (imdbID) => {
   const data = JSON.parse(sessionStorage.getItem("movieDetails")) || [];
 
   if (!data.find((item) => item.imdbId === imdbID)) {
-
     const response = await fetch(
       `https://imdb.iamidiotareyoutoo.com/search?tt=${imdbID}`
     );
@@ -77,7 +76,7 @@ const SearchPage = () => {
   const { refetch, isFetching } = useQuery({
     queryKey: ["movieDetails"],
     queryFn: () => fetchMovieDetails(currentMovieId),
-    enabled: !!currentMovieId
+    enabled: !!currentMovieId,
   });
 
   const handleMouseEnter = (imdbID) => {
@@ -95,18 +94,53 @@ const SearchPage = () => {
     setError("");
     try {
       let url = `https://www.omdbapi.com/?apikey=8ef9ee99&s=${searchQuery}&plot=full&page=${pageNumber}`;
+      let unOfficialImDB = `https://imdb.iamidiotareyoutoo.com/search?q=${searchQuery}`;
       if (filter !== "all") {
         url += `&type=${filter}`;
       }
       const response = await fetch(url);
-      const data = await response.json();
+      let data = await response.json();
+      let refineData = [];
       if (data.Response === "False") {
-        setError(data.Error);
-        setResults([]);
-      } else {
-        setResults((prev) => [...prev, ...(data?.Search || [])]);
-        setMaxPageSize(data?.totalResults);
+        data = { Search: [], totalResults: 0 };
       }
+      if (pageNumber === 1) {
+        const imdbResponse = await fetch(unOfficialImDB);
+        const imdbData = await imdbResponse.json();
+         refineData = imdbData.description.reduce((acc, current) => {
+          const Title = current["#TITLE"];
+          const Year = current["#YEAR"] || "";
+          const imdbID = current["#IMDB_ID"];
+          const Poster = current["#IMG_POSTER"];
+          const Type = "";
+
+          acc.push({
+            Title,
+            Year,
+            imdbID,
+            Poster,
+            Type,
+          });
+          return acc;
+        }, []);
+      }else {
+        refineData = [];
+      }
+
+      // console.log(refineData)
+      const res = data.Search.concat(refineData);
+
+      data.Search = res;
+      const uniqueByImdbID = Object.values(
+        data.Search.reduce((acc, item) => {
+          acc[item.imdbID] = item;
+          return acc;
+        }, {})
+      );
+
+      setResults((prev) => [...prev, ...(uniqueByImdbID || [])]);
+      setMaxPageSize(data?.totalResults);
+      // }
     } catch (error) {
       console.error("Error fetching movies:", error);
       setError("An error occurred while fetching data.");
@@ -350,28 +384,30 @@ Return the output in a clean, well-structured JSON format. Do not add any additi
           </Typography>
         </Box>
       )}
-      {!loading && !error && query && <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: "600",
-                      color: "#fff",
-                      fontSize: "1rem",
-                      overflow: "hidden",
-                      WebkitLineClamp: "2",
-                      display: "-webkit-box",
-                      WebkitBoxOrient: "vertical",
-                      width: "80%",
-                      m: "0 auto",
-                    }}
-                  >
-                    Search Result
-                  </Typography>}
+      {!loading && !error && query && (
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "600",
+            color: "#fff",
+            fontSize: "1rem",
+            overflow: "hidden",
+            WebkitLineClamp: "2",
+            display: "-webkit-box",
+            WebkitBoxOrient: "vertical",
+            width: "80%",
+            m: "0 auto",
+          }}
+        >
+          Search Result
+        </Typography>
+      )}
       <Grid
         container
         spacing={"18px"}
         minHeight="60vh"
         sx={{ p: 1, width: "80%", m: "0 auto" }}
-      > 
+      >
         {results.length > 0 && query ? (
           results.map((movie) => (
             <CardLayout
