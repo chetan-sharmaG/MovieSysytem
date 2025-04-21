@@ -90,63 +90,69 @@ const SearchPage = () => {
 
   const fetchData = async (searchQuery, pageNumber) => {
     if (!searchQuery) return;
+  
     setLoading(true);
     setError("");
+  
     try {
       let url = `https://www.omdbapi.com/?apikey=8ef9ee99&s=${searchQuery}&plot=full&page=${pageNumber}`;
-      let unOfficialImDB = `https://imdb.iamidiotareyoutoo.com/search?q=${searchQuery}`;
+      const unOfficialImDB = `https://imdb.iamidiotareyoutoo.com/search?q=${searchQuery}`;
+  
       if (filter !== "all") {
         url += `&type=${filter}`;
       }
+  
       const response = await fetch(url);
       let data = await response.json();
       let refineData = [];
+  
       if (data.Response === "False") {
+        console.warn("OMDb Error:", data.Error);
         data = { Search: [], totalResults: 0 };
       }
+  
       if (pageNumber === 1) {
-        const imdbResponse = await fetch(unOfficialImDB);
-        const imdbData = await imdbResponse.json();
-         refineData = imdbData.description.reduce((acc, current) => {
-          const Title = current["#TITLE"];
-          const Year = current["#YEAR"] || "";
-          const imdbID = current["#IMDB_ID"];
-          const Poster = current["#IMG_POSTER"];
-          const Type = "";
-
-          acc.push({
-            Title,
-            Year,
-            imdbID,
-            Poster,
-            Type,
-          });
-          return acc;
-        }, []);
-      }else {
-        refineData = [];
+        try {
+          const imdbResponse = await fetch(unOfficialImDB);
+          const imdbData = await imdbResponse.json();
+          const imdbResults = imdbData?.description || [];
+  
+          refineData = imdbResults.map((item) => ({
+            Title: item["#TITLE"],
+            Year: item["#YEAR"] || "",
+            imdbID: item["#IMDB_ID"],
+            Poster: item["#IMG_POSTER"],
+            Type: "", // No type info from unofficial IMDb
+          }));
+        } catch (err) {
+          console.error("Error fetching from unofficial IMDb:", err);
+        }
       }
-
-      // console.log(refineData)
-      const res = data.Search.concat(refineData);
-
+  
+      const res = (data.Search || []).concat(refineData);
       data.Search = res;
+  
       const uniqueByImdbID = Object.values(
         data.Search.reduce((acc, item) => {
-          acc[item.imdbID] = item;
+          if (item.imdbID) acc[item.imdbID] = item;
           return acc;
         }, {})
       );
-
-      setResults((prev) => [...prev, ...(uniqueByImdbID || [])]);
+  
+      if (!uniqueByImdbID.length) {
+        setError("No results found.");
+      }
+  
+      setResults((prev) => [...prev, ...uniqueByImdbID]);
       setMaxPageSize(data?.totalResults);
-      // }
     } catch (error) {
       console.error("Error fetching movies:", error);
       setError("An error occurred while fetching data.");
     }
+  
     setLoading(false);
   };
+  
 
   useEffect(() => {
     if (debounce) {
@@ -181,14 +187,14 @@ const SearchPage = () => {
   }, [page]);
 
   useEffect(() => {
-    const savedQuery = localStorage.getItem("searchQuery");
+    const savedQuery = sessionStorage.getItem("searchQuery");
     if (savedQuery) {
       setQuery(savedQuery);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("searchQuery", query);
+    sessionStorage.setItem("searchQuery", query);
   }, [query]);
 
   async function chat() {

@@ -45,10 +45,10 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
           height="265" //265
           width="185" //185
           style={{ objectFit: "cover",opacity: loading ? 0.5 : 1 }}
-          image={isFetching ? "https://placehold.co/300x300/yellow/black?text=Loading..." :
-            movie.Poster !== "N/A"
+          image={
+            movie.Poster
               ? movie.Poster
-              : `https://placehold.co/300x300/yellow/black?text=${movie.Title}`
+              : `https://placehold.co/300x300/1f1f1f/white?text=${movie.Title}&font=Poppins`
           }
           alt={movie.Title}
           />
