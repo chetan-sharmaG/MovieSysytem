@@ -47,7 +47,7 @@ const fetchMovieDetails = async (imdbID) => {
     return movieDetails;
   }
 
-  return data.find((item) => item.imdbID === imdbID);
+  return data.find((item) => item.imdbId === imdbID);
 };
 
 const PopularSection = ({ handleSelect }) => {
@@ -70,6 +70,7 @@ const PopularSection = ({ handleSelect }) => {
 
   const MouseOut = () => {
     queryClient.cancelQueries(["movieDetails"]);
+    setCurrentMovieId(null);
   };
   const sectionNames = [
     "Popular Bollywood Movies",
@@ -104,7 +105,17 @@ const PopularSection = ({ handleSelect }) => {
               sx={{ overflow: "scroll", width: "100%" }}
             >
               {returnSection(index).Search.map((movie) => (
-               <CardLayout boxPosition={boxPosition} hoveredMovie={hoveredMovie}  setBoxPosition={setBoxPosition} setHoveredMovie={setHoveredMovie} handleSelect={handleSelect} iconRefs={iconRefs} key={movie.imdbID} movie={movie} fetchMovieDetails={fetchMovieDetails} />
+                <CardLayout
+                  handleSelect={handleSelect}
+                  movie={movie}
+                  boxPosition={boxPosition}
+                  fetchMovieDetails={fetchMovieDetails}
+                  hoveredMovie={hoveredMovie}
+                  iconRefs={iconRefs}
+                  setBoxPosition={setBoxPosition}
+                  setHoveredMovie={setHoveredMovie}
+                  key={movie.imdbID}
+                />
               ))}
             </Stack>
           </>
