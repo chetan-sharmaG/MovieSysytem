@@ -99,9 +99,12 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
             setLoading(false);
             if (details?.imdbID === movie.imdbID) {
               setHoveredMovie(details);
+            }else{
+              console.log(details?.imdbId);
+              setLoading(true);
             }
           }}
-          //   onMouseLeave={() => setHoveredMovie(null)}
+            // onMouseLeave={() => setHoveredMovie(null)}
         >
           <InfoIcon />
         </Box>
