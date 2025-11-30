@@ -19,14 +19,11 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
-import Groq from "groq-sdk";
-import GeneratedResponse from "./GeneratedResponse";
+import groq from "./groqClient";
+const GeneratedResponse = React.lazy(() => import("./GeneratedResponse"));
 import { useDebounce } from "./util";
 
-const groq = new Groq({
-  apiKey: import.meta.env.VITE_GROQ_API_KEY,
-  dangerouslyAllowBrowser: true,
-});
+// use groq client from groqClient.js
 
 const Search = () => {
   const listRef = useRef(null);
@@ -208,7 +205,7 @@ Use arrays only where specified.
 If data is not available, write "Not Available".`,
         },
       ],
-      model: "llama3-70b-8192",
+      model: "llama-3.3-70b-versatile",
     });
   }
   return (
@@ -497,7 +494,9 @@ If data is not available, write "Not Available".`,
           </List>
         )}
       </Box>
-      <GeneratedResponse content={content} />
+      <React.Suspense fallback={<Box sx={{display:'flex',justifyContent:'center'}}><CircularProgress/></Box>}>
+        <GeneratedResponse content={content} />
+      </React.Suspense>
     </>
   );
 };

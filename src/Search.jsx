@@ -17,41 +17,17 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState, Suspense } from "react";
 import { useDebounce } from "./util";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import Groq from "groq-sdk";
+import groq from "./groqClient";
 import CardLayout from "./CardLayout";
-import GeneratedResponse from "./GeneratedResponse";
-import PopularSection from "./PopularSection";
+const GeneratedResponse = React.lazy(() => import("./GeneratedResponse"));
+const PopularSection = React.lazy(() => import("./PopularSection"));
+import { fetchMovieDetails } from "./util";
 
-const groq = new Groq({
-  apiKey: import.meta.env.VITE_GROQ_API_KEY,
-  dangerouslyAllowBrowser: true,
-});
-
-const fetchMovieDetails = async (imdbID) => {
-  console.log(imdbID);
-  const data = JSON.parse(sessionStorage.getItem("movieDetails")) || [];
-
-  if (!data.find((item) => item.imdbId === imdbID)) {
-    const response = await fetch(
-      `https://imdb.iamidiotareyoutoo.com/search?tt=${imdbID}`
-    );
-
-    const movieDetails = await response.json();
-
-    sessionStorage.setItem(
-      "movieDetails",
-      JSON.stringify([...data, movieDetails])
-    );
-    console.log(movieDetails);
-    return movieDetails;
-  }
-  console.log(data);
-  return data.find((item) => item.imdbId === imdbID);
-};
+// groq client and fetchMovieDetails now come from shared modules
 const SearchPage = () => {
   const [query, setQuery] = useState("");
   const debounce = useDebounce(query, 500);
@@ -274,7 +250,7 @@ Important Instructions for Output:
 Return the output in a clean, well-structured JSON format. Do not add any additional text or comments.`,
         },
       ],
-      model: "llama3-70b-8192",
+      model: "llama-3.3-70b-versatile",
     });
   }
   const getSelectedMoviesText = useCallback((selectedMovies) => {
@@ -430,7 +406,9 @@ Return the output in a clean, well-structured JSON format. Do not add any additi
             />
           ))
         ) : loading && debounce ? null : (
-          <PopularSection handleSelect={handleSelect} />
+          <Suspense fallback={<Box sx={{display:'flex',justifyContent:'center',width:'100%'}}><CircularProgress sx={{color:'#fff'}}/></Box>}>
+            <PopularSection handleSelect={handleSelect} />
+          </Suspense>
         )}
 
         {loading &&
@@ -533,7 +511,9 @@ Return the output in a clean, well-structured JSON format. Do not add any additi
       )}
 
       {Object.keys(content).length > 0 && (
-        <GeneratedResponse content={content} />
+        <Suspense fallback={<Box sx={{display:'flex',justifyContent:'center',width:'100%'}}><CircularProgress sx={{color:'#fff'}}/></Box>}>
+          <GeneratedResponse content={content} />
+        </Suspense>
       )}
     </Box>
   );

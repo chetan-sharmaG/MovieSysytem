@@ -45,7 +45,7 @@ const HoveredDetails = ({ boxPosition, hoveredMovie, setVisible, visible }) => {
         style={{ borderRadius: "8px", transition: "opacity 0.5s ease-in" }}
       >
         <source
-          src={`https://imdb.iamidiotareyoutoo.com/media/${hoveredMovie?.imdbId}`}
+          src={`https://imdb.iamidiotareyoutoo.com/media/${hoveredMovie?.imdbID}`}
           type="video/mp4"
         />
         Your browser does not support the video tag.
@@ -163,7 +163,7 @@ const HoveredDetails = ({ boxPosition, hoveredMovie, setVisible, visible }) => {
       </Typography>
       <Typography variant="caption" color="#aaa" mt={1}>
   Actors:{" "}
-  {hoveredMovie?.short?.actor.map((actor, index) => (
+  {hoveredMovie?.short?.actor?.map((actor, index) => (
     <React.Fragment key={actor.name}>
       <ActorThumbnailTooltip actor={actor} />
       {index !== hoveredMovie?.short?.actor.length - 1 && ", "}
@@ -179,7 +179,7 @@ const HoveredDetails = ({ boxPosition, hoveredMovie, setVisible, visible }) => {
       </Typography> */}
       <Box sx={{ mt: 2 }}>
         <a
-          href={`https://www.imdb.com/title/${hoveredMovie?.imdbId}`}
+          href={`https://www.imdb.com/title/${hoveredMovie?.imdbID}`}
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: "none" }}

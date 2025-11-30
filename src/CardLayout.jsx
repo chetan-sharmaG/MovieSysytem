@@ -94,11 +94,10 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
               left: rect.left + window.scrollX,
             });
             setLoading(true);
-            const details = await fetchMovieDetails(movie.imdbID);
-            console.log(details);
+              const details = await fetchMovieDetails(movie.imdbID);
             // setHoveredMovie(details);
             setLoading(false);
-            if (details?.imdbId === movie.imdbID) {
+            if (details?.imdbID === movie.imdbID) {
               setHoveredMovie(details);
             }
           }}
@@ -108,11 +107,11 @@ const CardLayout = ({handleSelect,setHoveredMovie,movie,iconRefs,setBoxPosition,
         </Box>
       </Card>
       
-      {hoveredMovie?.imdbId === movie.imdbID && (
+      {hoveredMovie?.imdbID === movie.imdbID && (
         <HoveredDetails boxPosition={boxPosition} hoveredMovie={hoveredMovie} setVisible={setVisible} visible={visible} />
       )}
     </Grid>
   );
 };
 
-export default CardLayout;
+export default React.memo(CardLayout);

@@ -14,7 +14,8 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchMovieDetails } from "./util";
 import InfoIcon from "@mui/icons-material/Info";
 import HoveredDetails from "./HoveredDetails";
 import CardLayout from "./CardLayout";
@@ -30,25 +31,7 @@ const returnSection = (index) => {
       return trendingAnime;
   }
 };
-const fetchMovieDetails = async (imdbID) => {
-  const data = JSON.parse(sessionStorage.getItem("movieDetails")) || [];
-  if (!data.find((item) => item.imdbId === imdbID)) {
-    const response = await fetch(
-      `https://imdb.iamidiotareyoutoo.com/search?tt=${imdbID}`
-    );
-
-    const movieDetails = await response.json();
-
-    sessionStorage.setItem(
-      "movieDetails",
-      JSON.stringify([...data, movieDetails])
-    );
-
-    return movieDetails;
-  }
-
-  return data.find((item) => item.imdbID === imdbID);
-};
+// fetchMovieDetails is provided by ./util
 
 const PopularSection = ({ handleSelect }) => {
   const queryClient = useQueryClient();
@@ -114,4 +97,4 @@ const PopularSection = ({ handleSelect }) => {
   );
 };
 
-export default PopularSection;
+export default React.memo(PopularSection);

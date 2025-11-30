@@ -39,7 +39,7 @@ const fetchOmdbData = async (title, year,type) => {
   return data?.Response === "True" ? data : null;
 };
 
-const RecommendationCard = ({ item }) => {
+const RecommendationCard = React.memo(({ item }) => {
   const { data, isLoading } = useQuery({
     queryKey: ["omdb", item.imdb_id],
     queryFn: () => fetchOmdbData(item.title, item.release_year,item.type),
@@ -114,7 +114,7 @@ const RecommendationCard = ({ item }) => {
       )}
     </Card>
   );
-};
+});
 
 const RecommendationsList = ({ content }) => {
   useEffect(() => {
